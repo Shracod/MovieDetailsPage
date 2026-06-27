@@ -15,60 +15,102 @@ export default function MovieDetailPage() {
   const { data: movie, isLoading, isError } = useMovieDetail(id)
 
   if (isLoading) return <LoadingSpinner text="Loading movie..." />
-  if (isError) return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#E50914' }}>
-      Failed to load movie.
-    </div>
-  )
+  if (isError) return <div className="MovieDetailPage1--error">Failed to load movie.</div>
 
   return (
     <div className="MovieDetailPage1">
+
       <div className="MovieDetailPage2">
-        <img src={getBackdropUrl(movie.backdrop_path)} alt={movie.title}
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        <div className="MovieDetailPage3" />
+        <img
+          src={getBackdropUrl(movie.backdrop_path)}
+          alt={movie.title}
+          className="MovieDetailPage3"
+        />
         <div className="MovieDetailPage4" />
+        <div className="MovieDetailPage5" />
       </div>
-      <div className="MovieDetailPage5">
-        <div className="MovieDetailPage6">
-          <img src={getPosterUrl(movie.poster_path, 'w342')} alt={movie.title}
-            className="MovieDetailPage7" loading="lazy" />
-          <div className="MovieDetailPage8">
-            <h1 className="MovieDetailPage9">{movie.title}</h1>
-            {movie.tagline && <p className="MovieDetailPage10">{movie.tagline}</p>}
-            <div className="MovieDetailPage11">
-              {movie.genres?.map(g => <span key={g.id} className="MovieDetailPage12">{g.name}</span>)}
+
+      <div className="MovieDetailPage6">
+        <div className="MovieDetailPage7">
+          <img
+            src={getPosterUrl(movie.poster_path, 'w342')}
+            alt={movie.title}
+            className="MovieDetailPage8"
+            loading="lazy"
+          />
+
+          <div className="MovieDetailPage9">
+            <h1 className="MovieDetailPage10">{movie.title}</h1>
+            {movie.tagline && (
+              <p className="MovieDetailPage11">{movie.tagline}</p>
+            )}
+
+            <div className="MovieDetailPage12">
+              {movie.genres?.map(g => (
+                <span key={g.id} className="MovieDetailPage13">{g.name}</span>
+              ))}
             </div>
-            <div className="MovieDetailPage13">
-              <RatingBadge rating={movie.vote_average || 0} size={56} />
-              <div className="MovieDetailPage14">
+
+            <div className="MovieDetailPage14">
+              <RatingBadge rating={movie.vote_average || 0} size={52} />
+              <span className="MovieDetailPage14b">{movie.status}</span>
+              <div className="MovieDetailPage15">
+                <p>🎬 {movie.original_language?.toUpperCase()} · {formatRuntime(movie.runtime)}</p>
                 <p>📅 {formatDate(movie.release_date)}</p>
-                <p>⏱ {formatRuntime(movie.runtime)}</p>
-                <p>🌐 {movie.original_language?.toUpperCase()}</p>
               </div>
             </div>
-            <div className="MovieDetailPage15">
+
+            <div className="MovieDetailPage16">
+              {movie.vote_average > 0 && (
+                <div className="MovieDetailPage17">
+                  <p className="MovieDetailPage18">Score</p>
+                  <p className="MovieDetailPage19">{movie.vote_average?.toFixed(1)}/10</p>
+                </div>
+              )}
+              {movie.vote_count > 0 && (
+                <div className="MovieDetailPage17">
+                  <p className="MovieDetailPage18">Votes</p>
+                  <p className="MovieDetailPage19">{(movie.vote_count / 1000).toFixed(1)}K</p>
+                </div>
+              )}
+              {movie.budget > 0 && (
+                <div className="MovieDetailPage17">
+                  <p className="MovieDetailPage18">Budget</p>
+                  <p className="MovieDetailPage19">{formatCurrency(movie.budget)}</p>
+                </div>
+              )}
+              {movie.revenue > 0 && (
+                <div className="MovieDetailPage17">
+                  <p className="MovieDetailPage18">Revenue</p>
+                  <p className="MovieDetailPage19">{formatCurrency(movie.revenue)}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Action buttons */}
+            <div className="MovieDetailPage20">
               <WatchlistButton item={movie} />
               <TrailerModal videos={movie.videos?.results || []} />
             </div>
-            <h2 className="MovieDetailPage16">Overview</h2>
-            <p className="MovieDetailPage17">{movie.overview}</p>
-            <div className="MovieDetailPage18">
-              <div><p className="MovieDetailPage19">Budget</p><p className="MovieDetailPage20">{formatCurrency(movie.budget)}</p></div>
-              <div><p className="MovieDetailPage19">Revenue</p><p className="MovieDetailPage20">{formatCurrency(movie.revenue)}</p></div>
-              <div><p className="MovieDetailPage19">Status</p><p className="MovieDetailPage20">{movie.status}</p></div>
-            </div>
+
+            <h2 className="MovieDetailPage21">Synopsis</h2>
+            <p className="MovieDetailPage22">{movie.overview || 'No overview available.'}</p>
           </div>
         </div>
+
         <CastRow cast={movie.credits?.cast || []} />
+
         {movie.reviews?.results?.length > 0 && (
-          <div className="MovieDetailPage21">
-            <h2 className="MovieDetailPage22">Reviews</h2>
-            <div className="MovieDetailPage23">
-              {movie.reviews.results.slice(0, 3).map(r => <ReviewCard key={r.id} review={r} />)}
+          <div className="MovieDetailPage23">
+            <h2 className="MovieDetailPage24">Reviews</h2>
+            <div className="MovieDetailPage25">
+              {movie.reviews.results.slice(0, 3).map(r => (
+                <ReviewCard key={r.id} review={r} />
+              ))}
             </div>
           </div>
         )}
+        
         <SimilarMovies items={movie.similar?.results || []} title="Similar Movies" />
       </div>
     </div>
